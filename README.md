@@ -1,70 +1,90 @@
-# Super-RES-Huma-Projesi
+<div align="center">
 
-# Kurulum
+# 🔍 Super-Resolution with Real-ESRGAN
 
-1.Dosya konumu belirleme
+**Hackathon project: upscaling low-resolution images and videos ×2 / ×4 with a GAN, on a GPU or a plain laptop.**
 
-    ```bash
-    git clone https://github.com/xinntao/Real-ESRGAN.git
-    cd Real-ESRGAN
-    ```
-1. Bagimli paketleri yukleme
+![Python](https://img.shields.io/badge/Python-3-3776AB?logo=python&logoColor=white)
+![PyTorch](https://img.shields.io/badge/PyTorch-EE4C2C?logo=pytorch&logoColor=white)
+![Real-ESRGAN](https://img.shields.io/badge/model-Real--ESRGAN-8A2BE2)
+![Colab](https://img.shields.io/badge/Google%20Colab-ready-F9AB00?logo=googlecolab&logoColor=white)
+![Hackathon](https://img.shields.io/badge/HUMA-Hackathon-ff69b4)
 
-    ```bash
-    # Install basicsr - https://github.com/xinntao/BasicSR
-    # We use BasicSR for both training and inference
-    pip install basicsr
-    # facexlib and gfpgan are for face enhancement
-    pip install facexlib
-    pip install gfpgan
-    pip install -r requirements.txt
-    python setup.py develop
-    ```
+</div>
 
 ---
 
+## 🎯 About
 
-### Taşınabilir yürütülebilir dosyalar (NCNN)
+Built for the **HUMA Hackathon** (August 2024). The pipeline uses **[Real-ESRGAN](https://github.com/xinntao/Real-ESRGAN)**, a GAN trained on synthetic real-world degradations (blur, noise, JPEG artifacts), to restore and upscale:
 
-Indirme linkleri: [Windows](https://github.com/xinntao/Real-ESRGAN/releases/download/v0.2.5.0/realesrgan-ncnn-vulkan-20220424-windows.zip) / [Linux](https://github.com/xinntao/Real-ESRGAN/releases/download/v0.2.5.0/realesrgan-ncnn-vulkan-20220424-ubuntu.zip) / [MacOS](https://github.com/xinntao/Real-ESRGAN/releases/download/v0.2.5.0/realesrgan-ncnn-vulkan-20220424-macos.zip) **Intel/AMD/Nvidia GPU için yürütülebilir dosyalar**.
+- 🖼️ **Images:** ×2 / ×4 upscaling, with optional face enhancement through GFPGAN
+- 🎞️ **Videos:** frame-by-frame upscaling with `realesr-animevideov3`
+- 💻 **No-CUDA option:** portable NCNN-Vulkan binaries that run on Intel, AMD and NVIDIA GPUs without CUDA or PyTorch
 
-Bu yürütülebilir dosya **taşınabilir** ve gereken tüm ikili dosyaları ve modelleri içerir. CUDA veya PyTorch ortamına gerek yoktur.<br>
+## 🚀 Quickstart
 
-Basitçe aşağıdaki komutu çalıştırabilirsiniz (Windows örneği, daha fazla bilgi her yürütülebilir dosyanın README.md dosyasındadır):
+### Option A: Python / Colab
 
-```bash
-./realesrgan-ncnn-vulkan.exe -i input.jpg -o output.png -n model_name
-```
-5 model seçeneğimiz vardır:
-
-1. realesrgan-x4plus  (default)
-2. realesrnet-x4plus
-3. realesrgan-x4plus-anime (optimized for anime images, small model size)
-4. realesr-animevideov3 (animation video)
-
-Diğer modeller için `-n` bağımsız değişkenini kullanabilirsiniz; örneğin, `./realesrgan-ncnn-vulkan.exe -i input.jpg -o çıktı.png -n realesrnet-x4plus`
-
-# Real-ESRGAN mimarisini kullanma ve Real-ESRGAN'a giriş yapma 
+This repo holds the hackathon's inference, setup and deployment scripts. The `realesrgan` package itself comes from upstream:
 
 ```bash
-!git clone https://github.com/xinntao/Real-ESRGAN.git
-%cd Real-ESRGAN
-# Ortamı ayarlama
-!pip install basicsr
-!pip install facexlib
-!pip install gfpgan
-!pip install ffmpeg-python
-!pip install -r requirements.txt
-!python setup.py develop
+git clone https://github.com/xinntao/Real-ESRGAN.git
+cd Real-ESRGAN
+pip install basicsr facexlib gfpgan ffmpeg-python
+pip install -r requirements.txt
+python setup.py develop
 ```
 
+**Image:**
 
-#Video ile real-ESRGAN kullanma
 ```bash
-! python inference_realesrgan_video.py -i inputs/video/video_ismi.mp4 -n realesr-animevideov3 -s 2 --suffix outx2
+python inference_realesrgan.py -n RealESRGAN_x4plus -i inputs/ -o results/ --face_enhance
 ```
 
-# Sonuçları indirme
+**Video:**
+
 ```bash
-files.download('results/video_ismi_outx2.mp4')
+python inference_realesrgan_video.py -i inputs/video/my_video.mp4 -n realesr-animevideov3 -s 2 --suffix outx2
 ```
+
+In Colab, download the result with `files.download('results/my_video_outx2.mp4')`.
+
+### Option B: portable executable (no Python)
+
+Download for [Windows](https://github.com/xinntao/Real-ESRGAN/releases/download/v0.2.5.0/realesrgan-ncnn-vulkan-20220424-windows.zip) · [Linux](https://github.com/xinntao/Real-ESRGAN/releases/download/v0.2.5.0/realesrgan-ncnn-vulkan-20220424-ubuntu.zip) · [macOS](https://github.com/xinntao/Real-ESRGAN/releases/download/v0.2.5.0/realesrgan-ncnn-vulkan-20220424-macos.zip), then run:
+
+```bash
+./realesrgan-ncnn-vulkan -i input.jpg -o output.png -n realesrgan-x4plus
+```
+
+## 🧠 Models
+
+| Model | Best for |
+|---|---|
+| `realesrgan-x4plus` *(default)* | General photos, ×4 |
+| `realesrnet-x4plus` | Smoother output, fewer GAN artifacts |
+| `realesrgan-x4plus-anime` | Anime and illustrations (small model) |
+| `realesr-animevideov3` | Animation video |
+
+## 📁 Files
+
+| File | Purpose |
+|---|---|
+| `inference_realesrgan.py` | Image inference CLI |
+| `inference_realesrgan_video.py` | Video inference CLI |
+| `cog_predict.py`, `cog.yaml` | Deployment with [Cog](https://github.com/replicate/cog) / Replicate |
+| `setup.py`, `requirements.txt` | Installation |
+
+## 🙏 Credits
+
+Built on **Real-ESRGAN** by Xintao Wang et al.:
+[*Real-ESRGAN: Training Real-World Blind Super-Resolution with Pure Synthetic Data*](https://arxiv.org/abs/2107.10833), ICCVW 2021. The upstream code is BSD-3-Clause licensed.
+
+---
+
+<div align="center">
+
+Made by **[Yusuf Erkan](https://www.linkedin.com/in/yusuferkan1/)** · ⭐ Star it if it helped you
+
+</div>
